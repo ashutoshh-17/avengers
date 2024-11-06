@@ -1,0 +1,62 @@
+import java.util.Scanner;
+
+public class priority {
+    public static void main(String[] args) {
+        Scanner s = new Scanner(System.in);
+        int[] ct, a, p, pp, bt, w, t;
+        int n;
+        float atat = 0, awt = 0;
+        
+        System.out.print("Enter the number of processes: ");
+        n = s.nextInt();
+
+        p = new int[n];
+        pp = new int[n];
+        bt = new int[n];
+        w = new int[n];
+        t = new int[n];
+        a = new int[n];
+        ct = new int[n];
+
+        for (int i = 0; i < n; i++) {
+            System.out.print("\nProcess[" + (i + 1) + "] - Burst Time, Priority, Arrival Time: ");
+            bt[i] = s.nextInt();
+            pp[i] = s.nextInt();
+            a[i] = s.nextInt();
+            p[i] = i + 1;
+        }
+
+        for (int i = 0; i < n - 1; i++) {
+            for (int j = i + 1; j < n; j++) {
+                if (a[i] > a[j] || (a[i] == a[j] && pp[i] > pp[j])) {
+                    int temp = a[i]; a[i] = a[j]; a[j] = temp;
+                    temp = pp[i]; pp[i] = pp[j]; pp[j] = temp;
+                    temp = bt[i]; bt[i] = bt[j]; bt[j] = temp;
+                    temp = p[i]; p[i] = p[j]; p[j] = temp;
+                }
+            }
+        }
+
+        int currentTime = 0;
+        for (int i = 0; i < n; i++) {
+            if (currentTime < a[i]) {
+                currentTime = a[i];
+            }
+            currentTime += bt[i];
+            ct[i] = currentTime;
+            t[i] = ct[i] - a[i];
+            w[i] = t[i] - bt[i];
+            atat += t[i];
+            awt += w[i];
+        }
+
+        System.out.println("\nProcess\tArrival\tBurst\tPriority\tCompletion\tWait Time\tTurnaround Time");
+        for (int i = 0; i < n; i++) {
+            System.out.printf("%d\t%d\t%d\t%d\t\t%d\t\t%d\t\t%d\n", p[i], a[i], bt[i], pp[i], ct[i], w[i], t[i]);
+        }
+
+        System.out.printf("Average Wait Time: %.2f\n", (awt / n));
+        System.out.printf("Average Turnaround Time: %.2f\n", (atat / n));
+    }
+}
+

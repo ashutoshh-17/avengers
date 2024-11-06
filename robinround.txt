@@ -1,0 +1,63 @@
+import java.util.Scanner;
+
+public class robinround {
+    public static void main(String[] args) {
+        Scanner s = new Scanner(System.in);
+        int[] burstTime, remainingTime, completionTime, turnaroundTime, waitingTime;
+        int num, quantum;
+        
+        System.out.print("Enter number of processes: ");
+        num = s.nextInt();
+        
+        burstTime = new int[num];
+        remainingTime = new int[num];
+        completionTime = new int[num];
+        turnaroundTime = new int[num];
+        waitingTime = new int[num];
+        
+        for (int i = 0; i < num; i++) {
+            System.out.print("Enter burst time for process P[" + (i + 1) + "]: ");
+            burstTime[i] = s.nextInt();
+            remainingTime[i] = burstTime[i];
+            completionTime[i] = 0;
+        }
+        
+        System.out.print("Enter quantum: ");
+        quantum = s.nextInt();
+        
+        int remainingProcesses = num;
+        int time = 0;
+        
+        System.out.print("0");
+        
+        while (remainingProcesses != 0) {
+            for (int i = 0; i < num; i++) {
+                if (remainingTime[i] > 0) {
+                    if (remainingTime[i] > quantum) {
+                        remainingTime[i] -= quantum;
+                        time += quantum;
+                        System.out.print("| P[" + (i + 1) + "] |" + time);
+                    } else {
+                        time += remainingTime[i];
+                        remainingTime[i] = 0;
+                        completionTime[i] = time;
+                        remainingProcesses--;
+                        System.out.print("| P[" + (i + 1) + "] |" + time);
+                    }
+                }
+            }
+        }
+        
+        // Calculating turnaround time and waiting time
+        for (int i = 0; i < num; i++) {
+            turnaroundTime[i] = completionTime[i];
+            waitingTime[i] = turnaroundTime[i] - burstTime[i];
+        }
+        
+        // Printing the results
+        System.out.println("\n\nProcess\tBurst Time\tCompletion Time\tTurnaround Time\tWaiting Time");
+        for (int i = 0; i < num; i++) {
+            System.out.println("P[" + (i + 1) + "]\t\t" + burstTime[i] + "\t\t" + completionTime[i] + "\t\t" + turnaroundTime[i] + "\t\t" + waitingTime[i]);
+        }
+    }
+}
