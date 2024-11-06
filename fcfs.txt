@@ -67,3 +67,10 @@ public class fcfs{
 		System.out.println("Average Turnaround Time is: " + avgta/n);
 	}
 }
+
+
+
+
+
+
+//inp 3. 2. 3. 2. 5. 6. 9.

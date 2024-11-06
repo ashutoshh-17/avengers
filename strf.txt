@@ -1,62 +1,100 @@
-import java.util.Scanner;
-
-public class priority {
-    public static void main(String[] args) {
-        Scanner s = new Scanner(System.in);
-        int[] ct, a, p, pp, bt, w, t;
+import java.io.*;
+public class strf {
+    public static void main(String args[]) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         int n;
-        float atat = 0, awt = 0;
+        System.out.println("Please enter the number of Processes: ");
+        n = Integer.parseInt(br.readLine());
         
-        System.out.print("Enter the number of processes: ");
-        n = s.nextInt();
-
-        p = new int[n];
-        pp = new int[n];
-        bt = new int[n];
-        w = new int[n];
-        t = new int[n];
-        a = new int[n];
-        ct = new int[n];
-
-        for (int i = 0; i < n; i++) {
-            System.out.print("\nProcess[" + (i + 1) + "] - Burst Time, Priority, Arrival Time: ");
-            bt[i] = s.nextInt();
-            pp[i] = s.nextInt();
-            a[i] = s.nextInt();
-            p[i] = i + 1;
+        int proc[][] = new int[n + 1][5];
+        int burstTime[] = new int[n + 1];
+        
+        for (int i = 1; i <= n; i++) {
+            System.out.println("Please enter the Arrival Time for Process " + i + ": ");
+            proc[i][0] = Integer.parseInt(br.readLine());
+            System.out.println("Please enter the Burst Time for Process " + i + ": ");
+            burstTime[i] = proc[i][1] = Integer.parseInt(br.readLine());
+        }
+        
+        System.out.println("\nProcess Timeline\n");
+        int total_time = 0;
+        for (int i = 1; i <= n; i++) {
+            total_time += burstTime[i];
         }
 
-        for (int i = 0; i < n - 1; i++) {
-            for (int j = i + 1; j < n; j++) {
-                if (a[i] > a[j] || (a[i] == a[j] && pp[i] > pp[j])) {
-                    int temp = a[i]; a[i] = a[j]; a[j] = temp;
-                    temp = pp[i]; pp[i] = pp[j]; pp[j] = temp;
-                    temp = bt[i]; bt[i] = bt[j]; bt[j] = temp;
-                    temp = p[i]; p[i] = p[j]; p[j] = temp;
+        int time_chart[] = new int[total_time];
+
+        for (int i = 0; i < total_time; i++) {
+            int sel_proc = -1;
+            int min = Integer.MAX_VALUE;
+            
+            for (int j = 1; j <= n; j++) {  
+                if (proc[j][0] <= i && proc[j][1] > 0 && proc[j][1] < min) {
+                    min = proc[j][1];
+                    sel_proc = j;
                 }
             }
-        }
-
-        int currentTime = 0;
-        for (int i = 0; i < n; i++) {
-            if (currentTime < a[i]) {
-                currentTime = a[i];
+            
+            if (sel_proc == -1) {
+                continue;
             }
-            currentTime += bt[i];
-            ct[i] = currentTime;
-            t[i] = ct[i] - a[i];
-            w[i] = t[i] - bt[i];
-            atat += t[i];
-            awt += w[i];
+
+            time_chart[i] = sel_proc;
+            proc[sel_proc][1]--;
+
+            if (proc[sel_proc][1] == 0) {
+                proc[sel_proc][4] = i + 1;
+            }
+
+            for (int j = 1; j <= n; j++) {
+                if (proc[j][0] <= i) {
+                    if (proc[j][1] != 0) {
+                        proc[j][3]++;
+                        if (j != sel_proc) {
+                            proc[j][2]++;
+                        }
+                    } else if (j == sel_proc) {
+                        proc[j][3]++;
+                    }
+                }
+            }
+
+            if (i != 0) {
+                if (sel_proc != time_chart[i - 1]) {
+                    System.out.print(" " + i + " | P[" + sel_proc + "]");
+                }
+            } else {
+                System.out.print(" " + i + " | P[" + sel_proc + "]");
+            }
+            if (i == total_time - 1) {
+                System.out.print(" " + (i + 1));
+            }
         }
 
-        System.out.println("\nProcess\tArrival\tBurst\tPriority\tCompletion\tWait Time\tTurnaround Time");
-        for (int i = 0; i < n; i++) {
-            System.out.printf("%d\t%d\t%d\t%d\t\t%d\t\t%d\t\t%d\n", p[i], a[i], bt[i], pp[i], ct[i], w[i], t[i]);
+        System.out.println("\n\n");
+        System.out.println("PID\tArrival Time\tBurst Time\tCompletion Time\tWaiting Time\tTurnaround Time");
+        
+        for (int i = 1; i <= n; i++) {
+            System.out.printf("%d\t%2dms\t\t%2dms\t\t%2dms\t\t%2dms\t\t%2dms",
+                i, proc[i][0], burstTime[i], proc[i][4], proc[i][2], proc[i][3]);
+            System.out.println();
         }
-
-        System.out.printf("Average Wait Time: %.2f\n", (awt / n));
-        System.out.printf("Average Turnaround Time: %.2f\n", (atat / n));
+        
+        float totalWT = 0, totalTT = 0;
+        for (int i = 1; i <= n; i++) {
+            totalWT += proc[i][2];
+            totalTT += proc[i][3];
+        }
+        float avgWT = totalWT / n;
+        float avgTT = totalTT / n;
+        
+        System.out.println("\nThe Average Waiting Time is: " + avgWT + "ms");
+        System.out.println("The Average Turnaround Time is: " + avgTT + "ms");
     }
 }
 
+
+
+
+
+//inp 3. 0. 7. 2. 4. 4. 1.
